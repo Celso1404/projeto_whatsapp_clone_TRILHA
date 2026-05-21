@@ -78,12 +78,14 @@ class WhatsappController {
                 this.el.panelAddContact.addClass('open');
             }, 300);
         });
+
         this.el.btnClosePanelEditProfile.on('click', e=>{
             this.el.panelEditProfile.removeClass('open');
         });
         this.el.btnClosePanelAddContact.on('click', e=>{
             this.el.panelAddContact.removeClass('open');
         });
+
         this.el.photoContainerEditProfile.on('click', e=>{
             this.el.inputProfilePhoto.click();
         });
@@ -93,6 +95,7 @@ class WhatsappController {
                 this.el.btnSavePanelEditProfile.click();
             }
         });
+
         this.el.btnSavePanelEditProfile.on('click', e=>{
             console.log(this.el.inputNamePanelEditProfile.innerHTML);
         });
@@ -108,23 +111,65 @@ class WhatsappController {
                 });         
             });
         });
+
         this.el.btnAttach.on('click', e=>{
             e.stopPropagation();
             this.el.menuAttach.addClass('open');
             document.addEventListener('click', this.closeMenuAttach.bind(this));
         });
+//responsáveis pela foto de perfil        
         this.el.btnAttachPhoto.on('click', e=>{
-            
+            this.el.inputPhoto.click();
         })
+        this.el.inputPhoto.on('change', e=>{
+            console.log(this.el.inputPhoto.files);
+            [...this.el.inputPhoto.files].forEach(file=>{
+                
+            });
+        });
+//responsáveis pela câmera
         this.el.btnAttachCamera.on('click', e=>{
+            this.closeAllMainPanel();
+            this.el.panelCamera.addClass('open');  
+            this.el.panelCamera.css({
+                'height':'calc(100% - 120px)'      
+            });
+        });
+        this.el.btnClosePanelCamera.on('click', e=> {
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show(); 
+        });
+        this.el.btnTakePicture.on('click', e=>{
             
-        })
+        });
+//campo dos documentos
         this.el.btnAttachDocument.on('click', e=>{
-            
-        })
+            this.closeAllMainPanel();
+            this.el.panelDocumentPreview.addClass('open');
+            this.el.panelDocumentPreview.css({
+                'height': 'calc(100% - 120px)'
+            });
+        });
+        this.el.btnClosePanelDocumentPreview.on('click', e=>{
+            this.closeAllMainPanel();
+            this.el.panelMessagesContainer.show();
+        });
+        this.el.btnSendDocument.on('click', e=>{
+
+        });
+//gerencia os contatos
         this.el.btnAttachContact.on('click', e=>{
-            
+            this.el.modalContacts.show();
+        });
+        this.el.btnCloseModalContacts.on('click', e=>{
+            this.el.modalContacts.hide();
         })
+    }
+
+    closeAllMainPanel() { //funciona para esconder os painéis
+        this.el.panelMessagesContainer.hide(); 
+        this.el.panelDocumentPreview.removeClass('open');
+        this.el.panelCamera.removeClass('open');
     }
 
     closeMenuAttach(e) {

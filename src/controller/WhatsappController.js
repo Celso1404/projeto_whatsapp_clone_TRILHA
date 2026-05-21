@@ -163,7 +163,32 @@ class WhatsappController {
         });
         this.el.btnCloseModalContacts.on('click', e=>{
             this.el.modalContacts.hide();
-        })
+        });
+//configuração do microfone
+        this.el.btnSendMicrophone.on('click', e=> {
+            this.el.recordMicrophone.show();
+            this.el.btnSendMicrophone.hide();
+            this.startMicrophoneTime();
+        });
+        this.el.btnCancelMicrophone.on('click', e=>{
+            this.closeRecordMicrophone();
+        });
+        this.el.btnFinishMicrophone.on('click', e=>{
+            this.closeRecordMicrophone();
+        });
+    }
+
+    startMicrophoneTime() {
+        let start = Date.now(); 
+        this._recordMicrophoneInterval = setInterval(() => {
+            this.el.recordMicrophoneTimer.innerHTML = (Date.now() - start); 
+        }, 100);
+    }
+//Fechar microfone
+    closeRecordMicrophone() {
+        this.el.recordMicrophone.hide();
+        this.el.btnSendMicrophone.show();
+        clearInterval(this._recordMicrophoneInterval)
     }
 
     closeAllMainPanel() { //funciona para esconder os painéis

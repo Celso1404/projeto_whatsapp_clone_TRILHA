@@ -201,9 +201,19 @@ class WhatsappController {
         this.el.btnEmojis.on('click', e=>{
             this.el.panelEmojis.toggleClass('open');
         });
-        this.el.panelEmojis.querySelectorAll('emojik').forEach(emoji=>{
+        this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji=>{
             emoji.on('click', e=>{
+                let img = this.el.imgEmojiDefault.cloneNode();
+                img.style.cssText = emoji.style.cssText;
+                img.dataset.unicode = emoji.dataset.unicode;
+                img.alt = emoji.dataset.unicode;
+
+                emoji.classList.forEach(name=> {
+                    img.classList.add(name);
+                });
                 
+                this.el.inputText.appendChild(img);
+                this.el.inputText.dispatchEvent(new Event('keyup'));
             });
         });
     }

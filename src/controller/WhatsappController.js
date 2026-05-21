@@ -145,8 +145,22 @@ export class WhatsappController {
             this._camera.stop();
         });
         this.el.btnTakePicture.on('click', e=>{
-            
+            let dataURL = this._camera.takePicture();
+
+            this.el.pictureCamera.src = dataURL;
+            this.el.pictureCamera.show();
+            this.el.videoCamera.hide();
+            this.el.btnReshootPanelCamera.show();
+            this.el.containerTakePicture.hide();
+            this.el.containerSendPicture.show();
         });
+        this.el.btnReshootPanelCamera.on('click', e=>{
+            this.el.pictureCamera.hide();
+            this.el.videoCamera.show();
+            this.el.btnReshootPanelCamera.hide();
+            this.el.containerTakePicture.show();
+            this.el.containerSendPicture.hide();
+        })
 //campo dos documentos
         this.el.btnAttachDocument.on('click', e=>{
             this.closeAllMainPanel();

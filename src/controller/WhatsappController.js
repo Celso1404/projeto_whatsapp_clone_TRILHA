@@ -135,6 +135,7 @@ class WhatsappController {
                 'height':'calc(100% - 120px)'      
             });
         });
+        this._camera = new CameraController(this.el.videoCamera); 
         this.el.btnClosePanelCamera.on('click', e=> {
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show(); 

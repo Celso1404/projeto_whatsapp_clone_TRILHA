@@ -1,5 +1,6 @@
 import {Format} from './../util/Format';
 import {CameraController} from './CameraController';
+import {DocumentPreviewController} from './DocumentPreviewController';
 
 export class WhatsappController {
     constructor() {
@@ -10,12 +11,12 @@ export class WhatsappController {
 
     loadElements() {
         this.el = {};
-        document.querySelectorAll('[id]').forEach(element=>{
+        document.querySelectorAll('[id]').forEach(element=>{ 
             this.el[Format.getCamelCase(element.id)] = element;
         });
     }  
 
-    elementsPrototype() {
+    elementsPrototype() { //mantém um padrão nas funções, por exemplo a função hide, em que todos os hide do código irão puxar o funcionamento desse elemento
         Element.prototype.hide = function(){
             this.style.display = 'none';
             return this;
@@ -65,7 +66,7 @@ export class WhatsappController {
             }); return json;
         }
     }
-
+    //Funções do whatsapp
     initEvents() {
         this.el.myPhoto.on('click', e=>{
             this.closeAllLeftPanel();
@@ -120,7 +121,7 @@ export class WhatsappController {
             this.el.menuAttach.addClass('open');
             document.addEventListener('click', this.closeMenuAttach.bind(this));
         });
-//responsáveis pela foto de perfil        
+        //responsáveis pela foto de perfil        
         this.el.btnAttachPhoto.on('click', e=>{
             this.el.inputPhoto.click();
         })
@@ -130,7 +131,7 @@ export class WhatsappController {
                 
             });
         });
-//responsáveis pela câmera
+        //responsáveis pela câmera
         this.el.btnAttachCamera.on('click', e=>{
             this.closeAllMainPanel();
             this.el.panelCamera.addClass('open');  
@@ -144,7 +145,7 @@ export class WhatsappController {
             this.el.panelMessagesContainer.show(); 
             this._camera.stop();
         });
-        this.el.btnTakePicture.on('click', e=>{
+        this.el.btnTakePicture.on('click', e=>{ //realiza o processo de tirar a foto
             let dataURL = this._camera.takePicture();
 
             this.el.pictureCamera.src = dataURL;
@@ -154,21 +155,60 @@ export class WhatsappController {
             this.el.containerTakePicture.hide();
             this.el.containerSendPicture.show();
         });
-        this.el.btnReshootPanelCamera.on('click', e=>{
+        this.el.btnReshootPanelCamera.on('click', e=>{ //tira a foto novamente
             this.el.pictureCamera.hide();
             this.el.videoCamera.show();
             this.el.btnReshootPanelCamera.hide();
             this.el.containerTakePicture.show();
             this.el.containerSendPicture.hide();
-        })
-//campo dos documentos
+        });
+        this.el.btnSendPicture.on('click', e=> {
+            
+        });
+        //campo dos documentos
         this.el.btnAttachDocument.on('click', e=>{
             this.closeAllMainPanel();
             this.el.panelDocumentPreview.addClass('open');
             this.el.panelDocumentPreview.css({
                 'height': 'calc(100% - 120px)'
             });
+            this.el.inputDocument.click();
         });
+        this.el.inputDocument.on('change', e=>{
+            if(this.el.inputDocument.files.length) {
+                let file = this.el.inputDocument.files[0];
+                this._documentPreviewController = new DocumentPreviewController(file);
+
+                this._documentPreviewController.getPreviewData().then(result=>{
+                    this.el.imgPanelDocumentPreview.src = result.src;
+                    this.el.infoPanelDocumentPreview.innerHTML = result.info;
+                    this.el.imagePanelDocumentPreview.show();
+                    this.el.imagePanelDocumentPreview.hide();
+                }).catch(err=>{
+                    switch (file.type) {
+                        case 'application/vnd.ms-excel':
+                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':   
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-xls"; 
+                            break;
+                        case 'application/vnd.ms-powerpoint':
+                        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-ppt";
+                            break;
+                        case 'application/msword':
+                        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-doc";
+                            break;
+
+                        default:
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-generic";
+                            break;      
+                    }
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.filePanelDocumentPreview.show();
+                });
+            }
+        }) 
         this.el.btnClosePanelDocumentPreview.on('click', e=>{
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
@@ -176,14 +216,14 @@ export class WhatsappController {
         this.el.btnSendDocument.on('click', e=>{
 
         });
-//gerencia os contatos
+        //gerencia os contatos
         this.el.btnAttachContact.on('click', e=>{
             this.el.modalContacts.show();
         });
         this.el.btnCloseModalContacts.on('click', e=>{
             this.el.modalContacts.hide();
         });
-//configuração do microfone
+        //configuração do microfone
         this.el.btnSendMicrophone.on('click', e=> {
             this.el.recordMicrophone.show();
             this.el.btnSendMicrophone.hide();
@@ -195,7 +235,7 @@ export class WhatsappController {
         this.el.btnFinishMicrophone.on('click', e=>{
             this.closeRecordMicrophone();
         });
-//Configuração do campo de digitar e enviar as mensagens
+        //Configuração do campo de digitar e enviar as mensagens
         this.el.inputText.on('keypress', e=>{
             if (e.key === 'Enter' && !e.ctrlKey) {
                 e.preventDefault();
@@ -216,7 +256,7 @@ export class WhatsappController {
         this.el.btnSend.on('click',e=> {
             
         });
-//Campo dos emojis
+        //Campo dos emojis
         this.el.btnEmojis.on('click', e=>{
             this.el.panelEmojis.toggleClass('open');
         });
@@ -252,14 +292,14 @@ export class WhatsappController {
         });
     }
 
-//Começa a gravar o microfone
+    //Começa a gravar o microfone
     startRecordMicrophoneTime() {
         let start = Date.now(); 
         this._recordMicrophoneInterval = setInterval(() => {
             this.el.recordMicrophoneTimer.innerHTML = Format.toTime(Date.now() - start); 
         }, 100);
     }
-//Fechar microfone
+    //Fechar microfone
     closeRecordMicrophone() {
         this.el.recordMicrophone.hide();
         this.el.btnSendMicrophone.show();

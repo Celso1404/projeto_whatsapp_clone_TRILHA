@@ -176,15 +176,27 @@ export class WhatsappController {
         });
         this.el.inputDocument.on('change', e=>{
             if(this.el.inputDocument.files.length) {
+                this.el.panelDocumentPreview.css({
+                    'height': '1%'
+                })
+
                 let file = this.el.inputDocument.files[0];
                 this._documentPreviewController = new DocumentPreviewController(file);
-
                 this._documentPreviewController.getPreviewData().then(result=>{
-                    this.el.imgPanelDocumentPreview.src = result.src;
-                    this.el.infoPanelDocumentPreview.innerHTML = result.info;
-                    this.el.imagePanelDocumentPreview.show();
-                    this.el.imagePanelDocumentPreview.hide();
-                }).catch(err=>{
+                    if(this.el.inputDocument.files.length) {
+                         this.el.panelDocumentPreview.css({
+                            'height': 'calc(100% - 120px)'
+                         });
+                         this.el.imgPanelDocumentPreview.src = result.src;
+                         this.el.infoPanelDocumentPreview.innerHTML = result.info;
+                         this.el.imagePanelDocumentPreview.show();
+                         this.el.imagePanelDocumentPreview.hide();
+                    } 
+                }).catch(err=>{
+                    this.el.panelDocumentPreview.css({
+                        'height': 'calc(100% - 120px)'
+                    });
+
                     switch (file.type) {
                         case 'application/vnd.ms-excel':
                         case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':   

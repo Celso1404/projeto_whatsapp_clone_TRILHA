@@ -242,8 +242,8 @@ export class WhatsappController {
             this.el.btnSendMicrophone.hide();
             this.startRecordMicrophoneTime();
             this._microphoneController = new MicrophoneController;
-            this._microphoneController.on('play', ()=>{
-                
+            this._microphoneController.on('play', audio=>{
+                console.log('Recebi o evento play', audio);
             });
         });
         this.el.btnCancelMicrophone.on('click', e=>{

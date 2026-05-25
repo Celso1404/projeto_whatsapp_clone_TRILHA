@@ -17,17 +17,28 @@ export class WhatsappController {
     initAuth() {
         this._firebase.initAuth()
         .then(response=>{
-            this._user = new User();
-            let userRef = User.findByEmail(response.user.email);
-            userRef.set({
-                name: response.user.displayName,
-                email: response.user.email,
-                photo: response.user.photoURL
-            }).then(()=> {
-                this.el.appContent.css({
-                display: 'flex'
+            this._user = new User(response.user.email);
+            this._user.on('datachange', data => {
+                document.querySelector('title').innerHTML = data.name + '- Whatsapp Clone'
+                this.el.inputNamePanelEditProfile.innerHTML = data.name;
+                if(data.photo) {
+                    let photo = this.el.imgPanelEditProfile;
+                    photo.src = data.photo;
+                    photo.show();
+                    this.el.imgDefaultPanelEditProfile.hide();
+                    let photo2 = this.el.myPhoto.querySelector('img');
+                    photo2.src = data.photo;
+                    photo2.show();
+                }
+                if (!data.name) this._user.name = response.user.displayName;
+                if (!data.photo) this._user.photo = response.user.photoURL;
+                this._user.email = response.user.email;
+                this._user.save().then(()=> {
+                    this.el.appContent.css({
+                    display: 'flex'
+                    });
                 });
-            });
+            });       
         }).catch(err=>{
             console.error("Erro no login:", err); 
         });

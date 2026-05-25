@@ -19,12 +19,12 @@ export class Firebase {
     }
 
     init() {
-        if(!this._initialized) {
+        if(!window._initializedFirebase) {
             firebase.initializeApp(this._config);
             firebase.firestore().settings({
-                timestampsSnapshots : true
-            })
-            this._initialized = true;
+                merge: true 
+            });
+            window._initializedFirebase = true;
         }
     }
     static db() {
@@ -40,7 +40,7 @@ export class Firebase {
         let provider = new firebase.auth.GoogleAuthProvider();
         firebase.auth().signInWithPopup(provider)
             .then(result =>{
-                let token = result.credential.acessToken;
+                let token = result.credential.accessToken;
                 let user = result.user;
                 s({
                     user,

@@ -43,15 +43,15 @@ export class User extends Model{
         return User.getRef().doc(email);
     }
 
-    addContact(contact) {
-       return User.getContactsRef(this.email)
-        .doc(btoa(contact.email))
-        .set(contact.toJSON()); 
+    addContact(contact) { 
+        return User.getContactsRef(this.email)
+            .doc(btoa(contact.email))
+            .set(contact.toJSON()); 
     }
 
     getContacts() {
         return new Promise((s, f)=> {
-            User.User.getContactsRef(this.email).onSnapshot(docs => {
+            User.getContactsRef(this.email).onSnapshot(docs => {
                 let contacts = [];
                 docs.forEach(doc => {
                     let data = doc.data();

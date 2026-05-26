@@ -119,7 +119,7 @@ export class WhatsappController {
                         img.show();
                     }
                     this.el.home.hide();
-                    this.el.main.cdd({
+                    this.el.main.css({
                         display: 'flex'
                     })
                 })
@@ -233,9 +233,8 @@ export class WhatsappController {
             let contact = new User(formData.get('email'));
             contact.on('datachange', data=>{
                 if(data.name) {
-                    this._user.addContatct(contact).then(()=>{
-                        this.el.btnClosePanelAddContact.cllick();
-                        console.info('Contato foi adicionado')
+                    this._user.addContact(contact).then(()=>{
+                    this.el.btnClosePanelAddContact.click();
                     });
                 } else {
                     console.log("Usuário não foi encontrado");

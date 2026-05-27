@@ -13,6 +13,7 @@ export class Firebase {
             storageBucket: "whatsapp-clone-69424.firebasestorage.app",
             messagingSenderId: "112776440085",
             appId: "1:112776440085:web:53169eadeeb6fe33b9a11c",
+            storageBucket: "gs://whatsapp-clone-69424.firebasestorage.app",
             measurementId: "G-LJXYBWLPPD"
         };
         this.init();

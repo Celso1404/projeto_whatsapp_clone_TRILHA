@@ -148,15 +148,26 @@ export class WhatsappController {
                 docs.forEach(doc => {
                     let data = doc.data();
                     data.id = doc.id;
+                    let message = new Message();
+                    message.fromJSON(data); // A mensagem recebe os dados aqui
+                    let me = (data.from === this._user.email);
+
                     if(!this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`)) {
-                        let message= new Message();
-                        message.fromJSON(data);
-                        let me = (data.from === this._user.email);
-                        let view = message.getViewElement(me);
+                        if(!me) {
+                            doc.ref.set({
+                                status: 'read'
+                            }, {
+                                merge: true
+                            });
+                        }
+                        let view = message.getViewElement(me); 
                         view.id = data.id; 
                         this.el.panelMessagesContainer.appendChild(view);
+                    } else if (me) {
+                        let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
+                        msgEL.querySelector('.message-status').innerHTML = message.getStatusViewElement().outerHTML;
                     }
-                })
+                });
 
                 if (autoScroll) {
                     this.el.panelMessagesContainer.scrollTop = (this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight);

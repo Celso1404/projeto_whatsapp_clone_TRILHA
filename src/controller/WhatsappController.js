@@ -50,15 +50,13 @@ export class WhatsappController {
     }
 
     initContacts() {
-        
         this._user.on('contactschange', docs => {
             this.el.contactsMessagesList.innerHTML = '';
             docs.forEach(doc => {
                 let contact = doc.data();
                 let div = document.createElement('div');
                 div.className = 'contact-item';
-                 div.innerHTML =
-                 `
+                div.innerHTML = `
             <div class="dIyEr">
             <div class="_1WliW" style="height: 49px; width: 49px;">
                 <img src="#" class="Qgzj8 gqwaM photo" style="display:none;">
@@ -106,6 +104,7 @@ export class WhatsappController {
             </div>
              </div>
                 `;
+                
                 if(contact.photo) {
                     let img = div.querySelector('.photo');
                     img.src = contact.photo;
@@ -126,33 +125,44 @@ export class WhatsappController {
         }
         this._contactActive = contact;
         this.el.activeName.innerHTML = contact.name;
-            this.el.activeStatus = contact.status;
+        this.el.activeStatus = contact.status;
+        
+        if (contact.photo) {
+            let img = this.el.activePhoto;
+            img.src = contact.photo;
+            img.show();
+        }
+        
+        this.el.home.hide();
+        this.el.main.css({
+            display: 'flex'
+        })
 
-            if (contact.photo) {
-                let img = this.el.activePhoto;
-                img.src = contact.photo;
-                img.show();
-            }
-                this.el.home.hide();
-                this.el.main.css({
-                display: 'flex'
-                })
-
+        this.el.panelMessagesContainer.innerHTML = '';        
         Message.getRef(this._contactActive.chatId).orderBy('timeStamp')
-            .onSnapshot(docs=>{
-                this.el.panelMessagesContainer.innerHTML = '';
+            .onSnapshot(docs=>{                
+                let scrollTop = this.el.panelMessagesContainer.scrollTop;
+                let scrollTopMax = (this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight);
+                let autoScroll = (scrollTop >= scrollTopMax);
+
                 docs.forEach(doc => {
                     let data = doc.data();
                     data.id = doc.id;
-
-                    if(!this.el.panelMessagesContainer.querySelector('#' + data.id)) {
+                    if(!this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`)) {
                         let message= new Message();
                         message.fromJSON(data);
                         let me = (data.from === this._user.email);
                         let view = message.getViewElement(me);
+                        view.id = data.id; 
                         this.el.panelMessagesContainer.appendChild(view);
                     }
                 })
+
+                if (autoScroll) {
+                    this.el.panelMessagesContainer.scrollTop = (this.el.panelMessagesContainer.scrollHeight - this.el.panelMessagesContainer.offsetHeight);
+                } else {
+                    this.el.panelMessagesContainer.scrollTop = scrollTop;
+                }
             })
     }
 

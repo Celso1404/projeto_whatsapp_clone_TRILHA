@@ -6,6 +6,7 @@ import { Firebase } from './../util/Firebase';
 import {User} from './../model/User'
 import {Chat} from './../model/Chat'
 import { Message } from '../model/Message';
+import { Base64 } from "../util/base64";
 
 export class WhatsappController {
     constructor() {
@@ -163,9 +164,21 @@ export class WhatsappController {
                         let view = message.getViewElement(me); 
                         view.id = data.id; 
                         this.el.panelMessagesContainer.appendChild(view);
-                    } else if (me) {
+                    } else {
                         let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
-                        msgEL.querySelector('.message-status').innerHTML = message.getStatusViewElement().outerHTML;
+                        if (msgEL) {
+                            let view = message.getViewElement(me);
+                            msgEL.innerHTML = view.innerHTML;
+                        }
+                    }
+                        if (me) {
+                        let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
+                        if (msgEL) {
+                            let statusEl = msgEL.querySelector('.message-status');
+                            if (statusEl) {
+                                statusEl.innerHTML = message.getStatusViewElement().outerHTML;
+                            }
+                        }
                     }
                 });
 
@@ -368,9 +381,9 @@ export class WhatsappController {
             let filename = `camera${Date.now()}.${ext}`;
 
             let picture = new Image();
-            picture.src =this.el.pictureCamer.src;
+            picture.src = this.el.pictureCamera.src;
             picture.onload = e=>{
-                let canvas = document.createElemente('canvas');
+                let canvas = document.createElement('canvas'); 
                 let context = canvas.getContext('2d');
 
                 canvas.width = picture.width;
@@ -424,7 +437,6 @@ export class WhatsappController {
                          this.el.imgPanelDocumentPreview.src = result.src;
                          this.el.infoPanelDocumentPreview.innerHTML = result.info;
                          this.el.imagePanelDocumentPreview.show();
-                         this.el.imagePanelDocumentPreview.hide();
                     } 
                 }).catch(err=>{
                     this.el.panelDocumentPreview.css({
@@ -459,8 +471,18 @@ export class WhatsappController {
             this.closeAllMainPanel();
             this.el.panelMessagesContainer.show();
         });
-        this.el.btnSendDocument.on('click', e=>{
+        this.el.btnSendDocument.on('click', e => {
+            let file = this.el.inputDocument.files[0];
+            let base64 = this.el.imgPanelDocumentPreview.src;
 
+            if(file.type === 'application/pdf' && base64.includes('data:image')) {
+                Base64.toFile(base64).then(filePreview => { 
+                    Message.sendDocument(this._contactActive.chatId, this._user.email, file, filePreview, this.el.infoPanelDocumentPreview.innerHTML);
+                });
+            } else {
+                Message.sendDocument(this._contactActive.chatId, this._user.email, file, null, this.el.infoPanelDocumentPreview.innerHTML);
+            }
+            this.el.btnClosePanelDocumentPreview.click();
         });
         //gerencia os contatos
         this.el.btnAttachContact.on('click', e=>{
@@ -508,13 +530,21 @@ export class WhatsappController {
             }
         });
         this.el.btnSend.on('click',e=> {
+            let textContent = this.el.inputText.innerHTML || this.el.inputText.value || '';
+            if (textContent.trim() === '') return;
+
             Message.send(
                 this._contactActive.chatId, 
                 this._user.email,
                 'text',
-                this.el.inputText.innerHTML);
-            this.el.inputText.innerHTML = '';
-            this.el.panelEmojis.removeClass('open');
+                textContent
+            ).then(() => {
+                this.el.inputText.innerHTML = '';
+                if(this.el.inputText.value !== undefined) this.el.inputText.value = ''; 
+                this.el.panelEmojis.removeClass('open');
+            }).catch(err => {
+                console.error("Erro ao tentar salvar no Firebase:", err);
+            });
         });
         //Campo dos emojis
         this.el.btnEmojis.on('click', e=>{

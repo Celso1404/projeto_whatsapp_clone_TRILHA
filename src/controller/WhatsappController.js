@@ -151,10 +151,13 @@ export class WhatsappController {
                     let data = doc.data();
                     data.id = doc.id;
                     let message = new Message();
-                    message.fromJSON(data); // A mensagem recebe os dados aqui
+                    message.fromJSON(data); 
                     let me = (data.from === this._user.email);
+                    let view = message.getViewElement(me); 
 
-                    if(!this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`)) {
+                    let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
+
+                    if(!msgEL) {
                         if(!me) {
                             doc.ref.set({
                                 status: 'read'
@@ -162,24 +165,37 @@ export class WhatsappController {
                                 merge: true
                             });
                         }
+                        
                         let view = message.getViewElement(me); 
-                        view.id = data.id; 
+                        view.id = data.id;
                         this.el.panelMessagesContainer.appendChild(view);
+                        
                     } else {
-                        let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
-                        if (msgEL) {
-                            let view = message.getViewElement(me);
-                            msgEL.innerHTML = view.innerHTML;
-                        }
-                    }
+                        let view = message.getViewElement(me);
+                        view.id = data.id; 
+                        msgEL.innerHTML = view.innerHTML;
+                        
                         if (me) {
-                        let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
-                        if (msgEL) {
                             let statusEl = msgEL.querySelector('.message-status');
                             if (statusEl) {
                                 statusEl.innerHTML = message.getStatusViewElement().outerHTML;
                             }
                         }
+                    }
+                    if(message.type === 'contact') {
+                        view.querySelector('.btn-message-send').on('click', e=>{
+                            Chat.createIfNotExists(this._user.email, message.content.email).then(chat=> {
+                                let contact = new User(message.content.email);
+
+                                contact.on('datachange', data => {
+                                    contact.chatId = chat.id;
+                                        this._user.addContact(contact);
+                                        this._user.chatId = chat.id;
+                                        contact.addContact(this._user);       
+                                        this.setActiveChat(contact);                               
+                                });   
+                            })
+                        });
                     }
                 });
 

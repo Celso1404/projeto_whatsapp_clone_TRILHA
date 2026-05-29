@@ -12,11 +12,44 @@ import { Upload } from '../util/Upload';
 
 export class WhatsappController {
     constructor() {
+        this._active = true;
         this._firebase = new Firebase();
         this.initAuth();
         this.elementsPrototype();
         this.loadElements();
         this.initEvents();
+        this.checkNotifications();
+    }
+
+    checkNotifications() {
+        if (typeof Notification === 'function') {
+            if(Notification.permission !== 'granted') {
+                this.el.alertNotificationPermission.show();
+            } else {
+                this.el.alertNotificationPermission.hide();
+            }
+            this.el.alertNotificationPermission.on('click', e=>{
+                Notification.requestPermission(permission=>{
+                    if (permission === 'granted') {
+                        this.el.alertNotificationPermission.hide();
+                    }
+                });
+            });
+        }
+    }
+
+    notification(data) {
+        if (Notification.permission === 'granted' && !this._active) {
+            let n = new Notification(this._contactActive.name, {
+                icon: this._contactActive.photo,
+                body: data.content
+            });
+            let sound = new Audio('./audio/alert.mp3');
+            sound.currentTime = 0;
+            sound.play().catch(err => {
+                console.error("O navegador bloqueou o áudio ou não encontrou o arquivo:", err);
+            });
+        }
     }
 
     initAuth() {
@@ -95,7 +128,7 @@ export class WhatsappController {
                 </svg>
                 </span>
                 </div>
-            <span dir="ltr" class="_1wjpf _3NFp9"><span class="_3T2VG">${contact.lastMessage}</span></span>
+            <span dir="ltr" class="_1wjpf _3NFp9"><span class="_3T2VG">${contact.lastMessage || ''}</span></span>
                  <div class="_3Bxar">
             <span>
             <div class="_15G96">
@@ -142,6 +175,7 @@ export class WhatsappController {
         })
 
         this.el.panelMessagesContainer.innerHTML = '';        
+        this._messagesReceived = [];
         Message.getRef(this._contactActive.chatId).orderBy('timeStamp')
             .onSnapshot(docs=>{                
                 let scrollTop = this.el.panelMessagesContainer.scrollTop;
@@ -154,8 +188,12 @@ export class WhatsappController {
                     let message = new Message();
                     message.fromJSON(data); 
                     let me = (data.from === this._user.email);
-                    let view = message.getViewElement(me); 
+                    if(!me && this._messagesReceived.filter(id => {id === data.id}).length === 0) {
+                        this.notification(data);
+                        this._messagesReceived.push(data.id);
+                    }
 
+                    let view = message.getViewElement(me); 
                     let msgEL = this.el.panelMessagesContainer.querySelector(`[id="${data.id}"]`);
 
                     if(!msgEL) {
@@ -267,6 +305,14 @@ export class WhatsappController {
     }
     //Funções do whatsapp
     initEvents() {
+        window.addEventListener('focus', e=> {
+            this._active = true;
+        });
+
+        window.addEventListener('blur', e=> {
+            this._active = false;
+        })
+
         this.el.inputSearchContacts.on('keyup', e=>{
             if(this.el.inputSearchContacts.value.length > 0) {
                 this.el.inputSearchContactsPlaceholder.hide();

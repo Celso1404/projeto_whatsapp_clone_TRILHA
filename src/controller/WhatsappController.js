@@ -26,7 +26,7 @@ export class WhatsappController {
             if(Notification.permission !== 'granted') {
                 this.el.alertNotificationPermission.show();
             } else {
-                this.el.alertNotificationPermission.hide();W
+                this.el.alertNotificationPermission.hide();
             }
             this.el.alertNotificationPermission.on('click', e=>{
                 Notification.requestPermission(permission=>{

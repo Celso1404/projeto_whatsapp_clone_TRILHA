@@ -5079,8 +5079,12 @@ html[dir] ._1IFvC button{
 .btn-attach:after,.YUoyu,._1N6G4,._2FsQ8,.menu-dropdown{
     position:absolute
 }
-.YUoyu{
-    opacity:.06
+.YUoyu {
+    background-image: url('../img/planoDeFundo_whatsapp.png') !important; 
+    background-repeat: no-repeat !important; 
+    background-size: cover !important; 
+    background-position: center !important; 
+    opacity: 0.6 !important;
 }
 html[dir] .YUoyu{
     background-repeat:repeat repeat

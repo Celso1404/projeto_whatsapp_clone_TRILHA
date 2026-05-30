@@ -674,7 +674,25 @@ export class WhatsappController {
 
                 this.el.inputText.dispatchEvent(new Event('keyup'));
             });
-        });   
+        }); 
+        
+            this.el.btnCloseImageModal.on('click', e => {
+                this.el.imageModal.removeClass('open');
+            });
+
+            this.el.imageModal.on('click', e => {
+                if (e.target.id === 'image-modal') {
+                    this.el.imageModal.removeClass('open');
+                }
+            });
+
+            this.el.panelMessagesContainer.on('click', e => {
+                if (e.target.tagName === 'IMG' && e.target.classList.contains('message-photo')) {
+                    this.el.imageModalContent.src = e.target.src;
+                    this.el.imageModal.addClass('open');
+                }
+            });
+        
     }
     //Fechar microfone
     closeRecordMicrophone() {

@@ -294,7 +294,21 @@
                                                     </svg>
                                                 </span>
                                             </div>
-    
+                                        </div>
+                                        <div class="rAUz7">
+                                            <div role="button" title="Menu">
+                                                <span data-icon="menu">
+                                                 </span>
+                                            </div>
+                                        </div>
+                                        <div class="rAUz7">
+                                            <div role="button" title="Alternar Tema" id="btn-toggle-theme">
+                                                <span data-icon="theme" id="icon-theme">
+                                                    <svg viewBox="0 0 24 24" width="24" height="24">
+                                                        <path fill="#263238" fill-opacity=".6" d="M12.003 21C7.034 21 3 16.966 3 11.997c0-4.004 2.584-7.466 6.186-8.736.195-.069.412.02.502.203.09.183.048.402-.102.536C7.575 5.794 6.3 8.744 6.3 11.997c0 4.962 4.035 8.997 8.997 8.997 3.256 0 6.206-1.277 8.003-3.29.134-.15.353-.19.536-.1.183.09.271.306.202.501C22.77 21.71 17.001 21 12.003 21z"></path>
+                                                    </svg>
+                                                </span>
+                                            </div>
                                         </div>
                                         <div class="rAUz7">
                                             <div role="button" title="Nova conversa" id="btn-new-contact">
@@ -304,7 +318,6 @@
                                                     </svg>
                                                 </span>
                                             </div>
-    
                                         </div>
                                         <div class="rAUz7">
                                             <div role="button" title="Menu">
@@ -454,7 +467,7 @@
                         </div>
                     </div>
                     <div id="main" class="_1GX8_">
-                        <div class="YUoyu" data-asset-chat-background="true"></div>
+                        <div id="chat-background" class="YUoyu" data-asset-chat-background="true"></div>
                         <header class="_3AwwN">
                             <div class="_18tv-" role="button">
                                 <div class="_1WliW" style="height: 40px; width: 40px;">
@@ -1043,6 +1056,10 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div id="image-modal" class="image-modal-overlay">
+        <span id="btn-close-image-modal" class="image-modal-close">&times;</span>
+        <img id="image-modal-content" class="image-modal-content">
     </div>
     <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" id="img-emoji-default"/>
     <script src="dist/pdf.worker.bundle.js"></script>
